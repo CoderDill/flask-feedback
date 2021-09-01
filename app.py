@@ -5,7 +5,7 @@ from forms import RegisterForm, LoginForm
 from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgres:///feedback_db"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///feedback_db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = True
 app.config["SECRET_KEY"] = "coolbeans"
@@ -30,7 +30,11 @@ def register_user():
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
-        new_user = User.register(username, password)
+        email = form.password.data
+        first_name = form.password.data
+        last_name = form.password.data
+        new_user = User.register(
+            username, password, email, first_name, last_name)
 
         db.session.add(new_user)
         try:
