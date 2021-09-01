@@ -30,9 +30,9 @@ def register_user():
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
-        email = form.password.data
-        first_name = form.password.data
-        last_name = form.password.data
+        email = form.email.data
+        first_name = form.first_name.data
+        last_name = form.last_name.data
         new_user = User.register(
             username, password, email, first_name, last_name)
 
