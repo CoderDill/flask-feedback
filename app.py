@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, session, flash
 from flask_debugtoolbar import DebugToolbarExtension
 from models import connect_db, db, User
 from forms import RegisterForm, LoginForm
+from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgres:///feedback_db"
@@ -23,27 +24,25 @@ def homepage():
     return render_template("index.html")
 
 
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    """Register user: produce form & handle form submission."""
-
+@app.route('/register', methods=['GET', 'POST'])
+def register_user():
     form = RegisterForm()
-
     if form.validate_on_submit():
-        name = form.username.data
-        pwd = form.password.data
+        username = form.username.data
+        password = form.password.data
+        new_user = User.register(username, password)
 
-        user = User.register(name, pwd)
-        db.session.add(user)
-        db.session.commit()
+        db.session.add(new_user)
+        try:
+            db.session.commit()
+        except IntegrityError:
+            form.username.errors.append('Username taken.  Please pick another')
+            return render_template('register.html', form=form)
+        session['user_id'] = new_user.id
+        flash('Welcome! Successfully Created Your Account!', "success")
+        return redirect('/')
 
-        session["user_id"] = user.id
-
-        # on successful login, redirect to secret page
-        return redirect("/secret")
-
-    else:
-        return render_template("register.html", form=form)
+    return render_template('register.html', form=form)
 
 
 @app.route("/login", methods=["GET", "POST"])
