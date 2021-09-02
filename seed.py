@@ -6,7 +6,7 @@ bcrypt = Bcrypt()
 db.drop_all()
 db.create_all()
 
-password = 'CoolBeans'
+password = 'pass'
 
 hashed = bcrypt.generate_password_hash(password)
 hashed_utf8 = hashed.decode("utf8")

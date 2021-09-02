@@ -42,9 +42,9 @@ def register_user():
         except IntegrityError:
             form.username.errors.append('Username already exists')
             return render_template('register.html', form=form)
-        session['user_id'] = new_user.id
+        session['username'] = username
         flash('Welcome, Successfully Created Your Account!', "success")
-        return redirect('/')
+        return redirect(f"/users/{username}")
 
     return render_template('register.html', form=form)
 
@@ -62,7 +62,7 @@ def login():
         user = User.authenticate(username, password)
 
         if user:
-            session["user_id"] = user.id
+            session["username"] = username
             return redirect(f"/users/{username}")
 
         else:
@@ -76,7 +76,7 @@ def user_detail(username):
     """Example hidden page for logged-in users only."""
     user = User.query.filter_by(username=username).first()
 
-    if "user_id" not in session:
+    if "username" not in session:
         flash("You must be logged in to view!")
         return redirect("/")
     else:
@@ -87,17 +87,18 @@ def user_detail(username):
 def logout():
     """Logs user out and redirects to homepage."""
 
-    session.pop("user_id")
+    session.pop("username")
 
     return redirect("/")
 
 
-@app.route("/users/<string:username>/delete", methods=['DELETE'])
+@app.route("/users/<string:username>/delete", methods=['POST'])
 def delete_user(username):
     """Delete User"""
-
+    
+    session.pop("username")
     user = User.query.filter_by(username=username).first()
-    session.pop("user_id")
     db.session.delete(user)
     db.session.commit()
+
     return redirect("/")
