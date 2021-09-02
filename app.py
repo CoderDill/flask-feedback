@@ -110,3 +110,8 @@ def delete_feedback(id):
     db.session.delete(feedback)
     db.session.commit()
     return redirect(f"/users/{feedback.username}")
+
+@app.route("/users/<string:username>/feedback/add", methods=["GET", "POST"])
+def add_feedback(username):
+    form = 
+    return render_template("feedback_form.html")
