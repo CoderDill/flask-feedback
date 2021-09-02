@@ -1,6 +1,6 @@
-from flask import Flask, render_template, redirect, session, flash
+from flask import Flask, render_template, redirect, session, flash, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
-from models import connect_db, db, User
+from models import connect_db, db, User, Feedback
 from forms import RegisterForm, LoginForm
 from sqlalchemy.exc import IntegrityError
 
@@ -19,7 +19,7 @@ toolbar = DebugToolbarExtension(app)
 
 @app.route("/")
 def homepage():
-    """Show homepage with links to site areas."""
+    """Show homepage"""
 
     return render_template("index.html")
 
@@ -40,10 +40,10 @@ def register_user():
         try:
             db.session.commit()
         except IntegrityError:
-            form.username.errors.append('Username taken.  Please pick another')
+            form.username.errors.append('Username already exists')
             return render_template('register.html', form=form)
         session['user_id'] = new_user.id
-        flash('Welcome! Successfully Created Your Account!', "success")
+        flash('Welcome, Successfully Created Your Account!', "success")
         return redirect('/')
 
     return render_template('register.html', form=form)
@@ -56,38 +56,31 @@ def login():
     form = LoginForm()
 
     if form.validate_on_submit():
-        name = form.username.data
-        pwd = form.password.data
+        username = form.username.data
+        password = form.password.data
 
-        # authenticate will return a user or False
-        user = User.authenticate(name, pwd)
+        user = User.authenticate(username, password)
 
         if user:
-            session["user_id"] = user.id  # keep logged in
-            return redirect("/secret")
+            session["user_id"] = user.id
+            return redirect(f"/users/{username}")
 
         else:
-            form.username.errors = ["Bad name/password"]
+            form.username.errors = ["Please try again."]
 
     return render_template("login.html", form=form)
-# end-login
 
 
-@app.route("/secret")
-def secret():
+@app.route("/users/<string:username>")
+def user_detail(username):
     """Example hidden page for logged-in users only."""
+    user = User.query.filter_by(username=username).first()
 
     if "user_id" not in session:
         flash("You must be logged in to view!")
         return redirect("/")
-
-        # alternatively, can return HTTP Unauthorized status:
-        #
-        # from werkzeug.exceptions import Unauthorized
-        # raise Unauthorized()
-
     else:
-        return render_template("secret.html")
+        return render_template("user_detail.html", user=user)
 
 
 @app.route("/logout")
@@ -96,4 +89,15 @@ def logout():
 
     session.pop("user_id")
 
+    return redirect("/")
+
+
+@app.route("/users/<string:username>/delete", methods=['DELETE'])
+def delete_user(username):
+    """Delete User"""
+
+    user = User.query.filter_by(username=username).first()
+    session.pop("user_id")
+    db.session.delete(user)
+    db.session.commit()
     return redirect("/")

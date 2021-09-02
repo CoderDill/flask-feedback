@@ -18,16 +18,11 @@ class User(db.Model):
 
     __tablename__ = "users"
 
-    id = db.Column(db.Integer,
-                   primary_key=True,
-                   autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
-    username = db.Column(db.Text,
-                         nullable=False,
-                         unique=True)
+    username = db.Column(db.Text, nullable=False, unique=True)
 
-    password = db.Column(db.Text,
-                         nullable=False)
+    password = db.Column(db.Text, nullable=False)
 
     email = db.Column(db.String(50), nullable=False, unique=True)
 
@@ -53,7 +48,21 @@ class User(db.Model):
 
         u = User.query.filter_by(username=username).first()
 
-        if u and bcrypt.check_password_hash(u.password, password):
+        if u and bcrypt.check_password_hash(u.password.encode('utf-8'), password):
             return u
         else:
             return False
+
+
+class Feedback(db.Model):
+    """Feedback"""
+
+    __tablename__ = "feedback"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+
+    title = db.Column(db.String(100), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    username = db.Column(db.Text, db.ForeignKey('users.username'))
+
+    user = db.relationship('User', backref="feedback")
