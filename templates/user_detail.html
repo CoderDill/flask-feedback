@@ -17,7 +17,7 @@
         {% if session['username'] == fb.username %}
         <form
           style="display: inline"
-          action="/feedback/{{user.feedback.id}}/delete"
+          action="/feedback/{{fb.id}}/delete"
           method="POST"
         >
           <button class="btn btn-sm btn-danger">

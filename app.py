@@ -95,10 +95,18 @@ def logout():
 @app.route("/users/<string:username>/delete", methods=['POST'])
 def delete_user(username):
     """Delete User"""
-    
+
     session.pop("username")
     user = User.query.filter_by(username=username).first()
     db.session.delete(user)
     db.session.commit()
 
     return redirect("/")
+
+
+@app.route("/feedback/<int:id>/delete", methods=["POST"])
+def delete_feedback(id):
+    feedback = Feedback.query.get_or_404(id)
+    db.session.delete(feedback)
+    db.session.commit()
+    return redirect(f"/users/{feedback.username}")
