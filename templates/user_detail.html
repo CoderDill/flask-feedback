@@ -14,7 +14,7 @@
         {% for fb in user.feedback%}
         <li>
           {{fb.title}} -
-          <a href="/users/{{user.username}}/feedback/update"> Edit</a>
+          <a href="/feedback/{{fb.id}}/update"> Edit</a>
         </li>
         <div>-{{fb.content}}</div>
         {% if session['username'] == fb.username %}
@@ -33,6 +33,9 @@
   </div>
   <form action="/users/{{user.username}}/delete" method="post">
     <button class="btn btn-danger" type="submit">Delete User</button>
+  </form>
+  <form action="/users/{{user.username}}/feedback/add">
+    <button class="btn btn-info" type="submit">Add Feedback</button>
   </form>
 </div>
 

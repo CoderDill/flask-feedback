@@ -89,6 +89,7 @@ def user_detail(username):
         raise Unauthorized()
 
     user = User.query.filter_by(username=username).first()
+    
 
     return render_template("user_detail.html", user=user)
 
@@ -105,15 +106,43 @@ def delete_user(username):
     return redirect("/")
 
 
+@app.route("/users/<string:username>/feedback/add", methods=["GET", "POST"])
+def add_feedback(username):
+    form = FeedbackForm()
+    if form.validate_on_submit():
+        title = form.title.data
+        content = form.content.data
+
+        feedback = Feedback(title=title, content=content, username=username)
+        db.session.add(feedback)
+        db.session.commit()
+        return redirect(f"/users/{username}")
+    else:
+        return render_template("feedback_form.html", form=form)
+
+
+@app.route(("/feedback/<int:feedback_id>/update"), methods=["GET", "POST"])
+def update_feedback(feedback_id):
+
+    feedback = Feedback.query.get(feedback_id)
+
+    if "username" not in session or feedback.username != session['username']:
+        raise Unauthorized()
+
+    form = FeedbackForm(fb=feedback)
+
+    if form.validate_on_submit():
+        feedback.title = form.title.data
+        feedback.content = form.content.data
+
+        db.session.commit()
+        return redirect(f"/users/{feedback.username}")
+    return render_template("feedback_form.html", form=form, feedback=feedback)
+
+
 @app.route("/feedback/<int:id>/delete", methods=["POST"])
 def delete_feedback(id):
     feedback = Feedback.query.get_or_404(id)
     db.session.delete(feedback)
     db.session.commit()
     return redirect(f"/users/{feedback.username}")
-
-
-@app.route("/users/<string:username>/feedback/add", methods=["GET", "POST"])
-def add_feedback(username):
-    form = FeedbackForm()
-    return redirect(f"/users/{username}", form=form)
