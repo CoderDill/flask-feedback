@@ -3,6 +3,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from models import connect_db, db, User, Feedback
 from forms import RegisterForm, LoginForm, FeedbackForm
 from sqlalchemy.exc import IntegrityError
+from werkzeug.exceptions import Unauthorized
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///feedback_db"
@@ -84,14 +85,12 @@ def logout():
 def user_detail(username):
     """Example hidden page for logged-in users only."""
 
-    user = User.query.filter_by(username=username).first()
-    print(user)
+    if "username" not in session or username != session['username']:
+        raise Unauthorized()
 
-    if "username" not in session:
-        flash("You must be logged in to view!")
-        return redirect("/")
-    else:
-        return render_template("user_detail.html", user=user)
+    user = User.query.filter_by(username=username).first()
+
+    return render_template("user_detail.html", user=user)
 
 
 @app.route("/users/<string:username>/delete", methods=["POST"])
