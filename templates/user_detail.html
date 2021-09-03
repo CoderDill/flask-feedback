@@ -12,7 +12,7 @@
     <div class="col-9">
       <ul>
         {% for fb in user.feedback%}
-        <li>{{fb.title}} - <a href="/feedback_form"> Edit</a></li>
+        <li>{{fb.title}} - <a href="/users/{{username}}/feedback/update"> Edit</a></li>
         <div>-{{fb.content}}</div>
         {% if session['username'] == fb.username %}
         <form

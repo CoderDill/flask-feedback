@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, session, flash, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from models import connect_db, db, User, Feedback
-from forms import RegisterForm, LoginForm
+from forms import RegisterForm, LoginForm, FeedbackForm
 from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__)
@@ -111,7 +111,8 @@ def delete_feedback(id):
     db.session.commit()
     return redirect(f"/users/{feedback.username}")
 
+
 @app.route("/users/<string:username>/feedback/add", methods=["GET", "POST"])
 def add_feedback(username):
-    form = 
-    return render_template("feedback_form.html")
+    form = FeedbackForm()
+    return redirect(f"/users/{username}", form=form)

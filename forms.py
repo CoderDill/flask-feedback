@@ -23,5 +23,5 @@ class LoginForm(FlaskForm):
 class FeedbackForm(FlaskForm):
     """Form to add feedback"""
 
-    title = StringField("Title", validators=[InputRequired])
-    content = StringField("Content", validators=[InputRequired])
+    title = StringField("Title", validators=[InputRequired()])
+    content = StringField("Content", validators=[InputRequired()])
