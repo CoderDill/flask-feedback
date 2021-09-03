@@ -17,7 +17,9 @@
         <ul class="nav navbar-nav flex-row float-right">
           {% if session['username'] %}
           <li class="nav-item">
-            <a class="nav-link pr-3 text-light" href="/users/{{username}}"
+            <a
+              class="nav-link pr-3 text-light"
+              href="/users/{{session['username']}}"
               >User Page</a
             >
           </li>

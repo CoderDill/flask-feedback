@@ -12,7 +12,10 @@
     <div class="col-9">
       <ul>
         {% for fb in user.feedback%}
-        <li>{{fb.title}} - <a href="/users/{{username}}/feedback/update"> Edit</a></li>
+        <li>
+          {{fb.title}} -
+          <a href="/users/{{user.username}}/feedback/update"> Edit</a>
+        </li>
         <div>-{{fb.content}}</div>
         {% if session['username'] == fb.username %}
         <form
@@ -28,9 +31,9 @@
       </ul>
     </div>
   </div>
-  <a class="btn btn-danger" href="/users/{{username}}/delete" role="button"
-    >Delete User</a
-  >
+  <form action="/users/{{user.username}}/delete" method="post">
+    <button class="btn btn-danger" type="submit">Delete User</button>
+  </form>
 </div>
 
 {% endblock %}

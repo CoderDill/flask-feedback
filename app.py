@@ -71,18 +71,6 @@ def login():
     return render_template("login.html", form=form)
 
 
-@app.route("/users/<string:username>")
-def user_detail(username):
-    """Example hidden page for logged-in users only."""
-    user = User.query.filter_by(username=username).first()
-
-    if "username" not in session:
-        flash("You must be logged in to view!")
-        return redirect("/")
-    else:
-        return render_template("user_detail.html", user=user)
-
-
 @app.route("/logout")
 def logout():
     """Logs user out and redirects to homepage."""
@@ -92,7 +80,21 @@ def logout():
     return redirect("/")
 
 
-@app.route("/users/<string:username>/delete", methods=['POST'])
+@app.route("/users/<string:username>")
+def user_detail(username):
+    """Example hidden page for logged-in users only."""
+
+    user = User.query.filter_by(username=username).first()
+    print(user)
+
+    if "username" not in session:
+        flash("You must be logged in to view!")
+        return redirect("/")
+    else:
+        return render_template("user_detail.html", user=user)
+
+
+@app.route("/users/<string:username>/delete", methods=["POST"])
 def delete_user(username):
     """Delete User"""
 
