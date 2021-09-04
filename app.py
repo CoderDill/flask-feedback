@@ -7,7 +7,8 @@ from werkzeug.exceptions import Unauthorized
 import os
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///feedback_db"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
+    "DATABASE_URL", "postgresql:///feedback_db")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = True
 app.config["SECRET_KEY"] = os.environ.get('SECRET_KEY', 'thisissecret123')
@@ -90,7 +91,6 @@ def user_detail(username):
         raise Unauthorized()
 
     user = User.query.filter_by(username=username).first()
-    
 
     return render_template("user_detail.html", user=user)
 
