@@ -1,10 +1,12 @@
 from models import User, db, Feedback
 from flask_bcrypt import Bcrypt
+from app import app
 
 bcrypt = Bcrypt()
 
-db.drop_all()
-db.create_all()
+with app.app_context():
+    db.drop_all()
+    db.create_all()
 
 password = 'pass'
 
